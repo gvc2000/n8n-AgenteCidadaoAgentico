@@ -18,21 +18,10 @@ Transformar cada agente em um **AI Agent** que pode:
 
 ## 🔧 Passo a Passo
 
-### 1. Configurar Credencial MCP no n8n
-
-Antes de converter os nós, você precisa configurar a conexão com o servidor MCP:
-
-1. No n8n, vá em **Credentials** > **Add Credential**
-2. Busque por **"MCP"** ou **"Model Context Protocol"**
-3. Configure:
-   - **Transport Type**: `HTTP with SSE`
-   - **Base URL**: `{{ $env.MCP_API_URL }}/mcp` (ou a URL do seu servidor MCP)
-4. Salve a credencial
-
-### 2. Configurar o Agente Legislativo
+### 1. Configurar o Agente Legislativo
 
 #### Antes (Placeholder):
-O nó atual se chama `SETUP REQUIRED: Agente Legislativo` e é um simples **HTTP Request** que chama o endpoint de saúde do servidor. Isso evita erros de importação com nós obsoletos.
+O nó atual se chama `SETUP REQUIRED: Agente Legislativo` e é um simples **HTTP Request** que chama o endpoint de saúde do servidor.
 
 #### Depois (AI Agent):
 1. **Deletar** o nó `SETUP REQUIRED: Agente Legislativo`
@@ -45,11 +34,17 @@ O nó atual se chama `SETUP REQUIRED: Agente Legislativo` e é um simples **HTTP
      
      Você tem acesso às ferramentas MCP para buscar dados reais da Câmara.
      ```
-   - **Tools**: Conecte um nó **MCP Tool** e selecione:
-     - `buscar_proposicoes`
-     - `detalhar_proposicao`
-     - `tramitacoes_proposicao`
-     - `autores_proposicao`
+   - **Tools**: 
+     1. Conecte um nó **MCP Tool** (pode aparecer como "Model Context Protocol" ou "MCP Client")
+     2. No nó MCP Tool, configure a conexão **diretamente nos parâmetros** (não precisa de credencial se não tiver autenticação):
+        - **Source**: `Implementation` (ou similar)
+        - **Transport Type**: `HTTP with SSE`
+        - **Base URL**: `{{ $env.MCP_API_URL }}/mcp` (ou `http://localhost:9090/mcp` se testar local)
+     3. Selecione as ferramentas:
+        - `buscar_proposicoes`
+        - `detalhar_proposicao`
+        - `tramitacoes_proposicao`
+        - `autores_proposicao`
 4. **Conectar** o nó `Log: Leg Start` ao novo `AI Agent`
 5. **Conectar** o `AI Agent` ao nó `Merge Results`
 
