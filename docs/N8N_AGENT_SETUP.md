@@ -29,61 +29,37 @@ Antes de converter os nós, você precisa configurar a conexão com o servidor M
    - **Base URL**: `{{ $env.MCP_API_URL }}/mcp` (ou a URL do seu servidor MCP)
 4. Salve a credencial
 
-### 2. Converter o Agente Legislativo
+### 2. Configurar o Agente Legislativo
 
-#### Antes (LLM Chain):
-```json
-{
-  "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
-  "parameters": {
-    "model": "gpt-4o",
-    "messages": { ... }
-  }
-}
-```
+#### Antes (Placeholder):
+O nó atual se chama `SETUP REQUIRED: Agente Legislativo` e é um simples **HTTP Request** que chama o endpoint de saúde do servidor. Isso evita erros de importação com nós obsoletos.
 
 #### Depois (AI Agent):
-1. **Deletar** o nó `Agente Legislativo` atual
-2. **Adicionar** um novo nó `AI Agent`
+1. **Deletar** o nó `SETUP REQUIRED: Agente Legislativo`
+2. **Adicionar** um novo nó **AI Agent** (`@n8n/n8n-nodes-langchain.agent`)
 3. **Configurar**:
-   - **Model**: `gpt-4o` (ou outro)
+   - **Model**: Conecte um nó de Chat Model (ex: `OpenAI Chat Model`)
    - **System Message**:
      ```
      Você é um consultor legislativo sênior. Analise o teor das leis, o impacto social e o status atual.
      
-     Você tem acesso às seguintes ferramentas MCP:
-     - buscar_proposicoes: Buscar proposições por tipo, ano, palavras-chave
-     - detalhar_proposicao: Obter detalhes completos de uma proposição
-     - tramitacoes_proposicao: Ver histórico de tramitação
-     - autores_proposicao: Ver quem apresentou a proposição
-     
-     Use essas ferramentas para responder com dados reais da Câmara.
+     Você tem acesso às ferramentas MCP para buscar dados reais da Câmara.
      ```
-   - **Tools**: Adicione o nó **MCP Client** e selecione as ferramentas:
+   - **Tools**: Conecte um nó **MCP Tool** e selecione:
      - `buscar_proposicoes`
      - `detalhar_proposicao`
      - `tramitacoes_proposicao`
      - `autores_proposicao`
-     - `temas_proposicao`
 4. **Conectar** o nó `Log: Leg Start` ao novo `AI Agent`
 5. **Conectar** o `AI Agent` ao nó `Merge Results`
 
-### 3. Converter o Agente Político
-
-Repita o processo acima, mas com ferramentas diferentes:
+### 3. Configurar o Agente Político
+Repita o processo acima para o nó `SETUP REQUIRED: Agente Politico`.
 
 **System Message**:
 ```
 Você é um analista político. Foque nas posições ideológicas, histórico de votação e alianças.
-
-Você tem acesso às seguintes ferramentas MCP:
-- buscar_deputados: Buscar deputados por nome, UF, partido
-- detalhar_deputado: Obter perfil completo de um deputado
-- discursos_deputado: Ver pronunciamentos em plenário
-- orgaos_deputado: Ver comissões que participa
-- frentes_deputado: Ver frentes parlamentares
-
-Use essas ferramentas para responder com dados reais da Câmara.
+Você tem acesso às ferramentas MCP para buscar dados reais da Câmara.
 ```
 
 **Ferramentas MCP**:
@@ -92,19 +68,14 @@ Use essas ferramentas para responder com dados reais da Câmara.
 - `discursos_deputado`
 - `orgaos_deputado`
 - `frentes_deputado`
-- `votos_votacao` (para ver como o deputado votou)
 
-### 4. Converter o Agente Fiscal
+### 4. Configurar o Agente Fiscal
+Repita o processo para o nó `SETUP REQUIRED: Agente Fiscal`.
 
 **System Message**:
 ```
 Você é um auditor fiscal. Procure por anomalias, gastos excessivos ou padrões suspeitos.
-
-Você tem acesso às seguintes ferramentas MCP:
-- despesas_deputado: Consultar gastos da cota parlamentar (CEAP)
-- detalhar_deputado: Obter dados do deputado
-
-Use essas ferramentas para responder com dados reais da Câmara.
+Você tem acesso às ferramentas MCP para buscar dados reais da Câmara.
 ```
 
 **Ferramentas MCP**:

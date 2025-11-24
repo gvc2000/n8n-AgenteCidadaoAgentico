@@ -42,35 +42,18 @@
         },
         {
             "parameters": {
-                "model": "gpt-4o",
-                "messages": {
-                    "values": [
-                        {
-                            "role": "system",
-                            "content": "Você é o Orquestrador do Agente Cidadão. Sua função é analisar a pergunta do usuário e decidir quais agentes especialistas devem ser acionados.\n\nAgentes disponíveis:\n- legislativo: Para leis, projetos de lei, tramitações.\n- politico: Para perfil de políticos, discursos, ideologia.\n- fiscal: Para gastos, cotas parlamentares, orçamento.\n\nResponda APENAS um JSON no formato:\n{\n  \"agentes\": [\"legislativo\", \"fiscal\"] \n}"
-                        },
-                        {
-                            "role": "user",
-                            "content": "={{ $('Webhook Chat').item.json.body.query }}"
-                        }
-                    ]
-                },
-                "jsonOutput": true
+                "url": "={{ $env.MCP_API_URL }}/health",
+                "method": "GET",
+                "options": {}
             },
             "id": "llm-orchestrator",
-            "name": "Orquestrador (LLM)",
-            "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
-            "typeVersion": 1,
+            "name": "SETUP REQUIRED: Orquestrador",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4,
             "position": [
                 400,
                 0
-            ],
-            "credentials": {
-                "openAiApi": {
-                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
-                    "name": "OpenAI account"
-                }
-            }
+            ]
         },
         {
             "parameters": {
@@ -131,34 +114,18 @@
         },
         {
             "parameters": {
-                "model": "gpt-4o",
-                "messages": {
-                    "values": [
-                        {
-                            "role": "system",
-                            "content": "Você é um consultor legislativo sênior. Analise o teor das leis, o impacto social e o status atual.\n\nNOTA: Para acessar dados reais da Câmara, este nó deve ser convertido em um 'AI Agent' com acesso às ferramentas MCP: buscar_proposicoes, detalhar_proposicao, tramitacoes_proposicao."
-                        },
-                        {
-                            "role": "user",
-                            "content": "={{ $('Webhook Chat').item.json.body.query }}"
-                        }
-                    ]
-                }
+                "url": "={{ $env.MCP_API_URL }}/health",
+                "method": "GET",
+                "options": {}
             },
             "id": "agent-legislativo",
-            "name": "Agente Legislativo",
-            "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
-            "typeVersion": 1,
+            "name": "SETUP REQUIRED: Agente Legislativo",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4,
             "position": [
                 1000,
                 -100
-            ],
-            "credentials": {
-                "openAiApi": {
-                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
-                    "name": "OpenAI account"
-                }
-            }
+            ]
         },
         {
             "parameters": {
@@ -188,34 +155,18 @@
         },
         {
             "parameters": {
-                "model": "gpt-4o",
-                "messages": {
-                    "values": [
-                        {
-                            "role": "system",
-                            "content": "Você é um analista político. Foque nas posições ideológicas, histórico de votação e alianças.\n\nNOTA: Para acessar dados reais da Câmara, este nó deve ser convertido em um 'AI Agent' com acesso às ferramentas MCP: buscar_deputados, detalhar_deputado, discursos_deputado."
-                        },
-                        {
-                            "role": "user",
-                            "content": "={{ $('Webhook Chat').item.json.body.query }}"
-                        }
-                    ]
-                }
+                "url": "={{ $env.MCP_API_URL }}/health",
+                "method": "GET",
+                "options": {}
             },
             "id": "agent-politico",
-            "name": "Agente Politico",
-            "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
-            "typeVersion": 1,
+            "name": "SETUP REQUIRED: Agente Politico",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4,
             "position": [
                 1000,
                 100
-            ],
-            "credentials": {
-                "openAiApi": {
-                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
-                    "name": "OpenAI account"
-                }
-            }
+            ]
         },
         {
             "parameters": {
@@ -245,34 +196,18 @@
         },
         {
             "parameters": {
-                "model": "gpt-4o",
-                "messages": {
-                    "values": [
-                        {
-                            "role": "system",
-                            "content": "Você é um auditor fiscal. Procure por anomalias, gastos excessivos ou padrões suspeitos.\n\nNOTA: Para acessar dados reais da Câmara, este nó deve ser convertido em um 'AI Agent' com acesso às ferramentas MCP: despesas_deputado, detalhar_deputado."
-                        },
-                        {
-                            "role": "user",
-                            "content": "={{ $('Webhook Chat').item.json.body.query }}"
-                        }
-                    ]
-                }
+                "url": "={{ $env.MCP_API_URL }}/health",
+                "method": "GET",
+                "options": {}
             },
             "id": "agent-fiscal",
-            "name": "Agente Fiscal",
-            "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
-            "typeVersion": 1,
+            "name": "SETUP REQUIRED: Agente Fiscal",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4,
             "position": [
                 1000,
                 300
-            ],
-            "credentials": {
-                "openAiApi": {
-                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
-                    "name": "OpenAI account"
-                }
-            }
+            ]
         },
         {
             "parameters": {
@@ -289,34 +224,18 @@
         },
         {
             "parameters": {
-                "model": "gpt-4o",
-                "messages": {
-                    "values": [
-                        {
-                            "role": "system",
-                            "content": "Você é o Sintetizador. Consolide as informações recebidas dos agentes especialistas em uma resposta única, clara e direta para o cidadão."
-                        },
-                        {
-                            "role": "user",
-                            "content": "Dados Legislativos: {{ $json.legislativo }}\nDados Políticos: {{ $json.politico }}\nDados Fiscais: {{ $json.fiscal }}"
-                        }
-                    ]
-                }
+                "url": "={{ $env.MCP_API_URL }}/health",
+                "method": "GET",
+                "options": {}
             },
             "id": "llm-synthesizer",
-            "name": "Sintetizador (LLM)",
-            "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
-            "typeVersion": 1,
+            "name": "SETUP REQUIRED: Sintetizador",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4,
             "position": [
                 1400,
                 0
-            ],
-            "credentials": {
-                "openAiApi": {
-                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
-                    "name": "OpenAI account"
-                }
-            }
+            ]
         },
         {
             "parameters": {
@@ -360,14 +279,14 @@
             "main": [
                 [
                     {
-                        "node": "Orquestrador (LLM)",
+                        "node": "SETUP REQUIRED: Orquestrador",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Orquestrador (LLM)": {
+        "SETUP REQUIRED: Orquestrador": {
             "main": [
                 [
                     {
@@ -407,14 +326,14 @@
             "main": [
                 [
                     {
-                        "node": "Agente Legislativo",
+                        "node": "SETUP REQUIRED: Agente Legislativo",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Agente Legislativo": {
+        "SETUP REQUIRED: Agente Legislativo": {
             "main": [
                 [
                     {
@@ -429,14 +348,14 @@
             "main": [
                 [
                     {
-                        "node": "Agente Politico",
+                        "node": "SETUP REQUIRED: Agente Politico",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Agente Politico": {
+        "SETUP REQUIRED: Agente Politico": {
             "main": [
                 [
                     {
@@ -451,14 +370,14 @@
             "main": [
                 [
                     {
-                        "node": "Agente Fiscal",
+                        "node": "SETUP REQUIRED: Agente Fiscal",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Agente Fiscal": {
+        "SETUP REQUIRED: Agente Fiscal": {
             "main": [
                 [
                     {
@@ -473,14 +392,14 @@
             "main": [
                 [
                     {
-                        "node": "Sintetizador (LLM)",
+                        "node": "SETUP REQUIRED: Sintetizador",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Sintetizador (LLM)": {
+        "SETUP REQUIRED: Sintetizador": {
             "main": [
                 [
                     {
