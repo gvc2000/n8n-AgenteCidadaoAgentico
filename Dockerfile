@@ -11,6 +11,12 @@ ENTRYPOINT []
 # Definir diretório de trabalho
 WORKDIR /home/node
 
+# Forçar o n8n a usar a pasta /home/node/.n8n para dados (mesmo sendo root)
+ENV N8N_USER_FOLDER=/home/node
+
+# Garantir que a pasta existe e tem permissões (caso o volume não monte corretamente)
+RUN mkdir -p /home/node/.n8n && chmod 777 /home/node/.n8n
+
 # Expor porta
 EXPOSE 5678
 
