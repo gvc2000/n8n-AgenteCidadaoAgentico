@@ -141,9 +141,52 @@ Consolida as respostas para o usuário final.
 
 ---
 
+## 6. Configurar Nós do Supabase
+
+O workflow usa o Supabase para logs e estado. Você precisa configurar a credencial e verificar se os nós estão corretos.
+
+### 6.1. Credencial Supabase
+1.  No n8n, vá em **Credentials** > **Add Credential**.
+2.  Busque por **Supabase API**.
+3.  Preencha:
+    *   **URL**: Sua URL do projeto Supabase (ex: `https://xyz.supabase.co`).
+    *   **Service Key**: Sua chave `service_role` (para permissão de escrita).
+4.  Salve.
+5.  **Importante**: Abra cada um dos 5 nós do Supabase listados abaixo e selecione essa credencial no campo "Credential".
+
+### 6.2. Detalhes dos Nós
+
+#### 1. Supabase: Init Request
+*   **Table**: `requests`
+*   **Operation**: `Create`
+*   **Columns**:
+    *   `user_query`: `{{ $json.body.query }}`
+    *   **status**: `orchestrating`
+
+#### 2. Logs dos Agentes (Leg/Pol/Fis Start)
+Estes nós (`Log: Leg Start`, `Log: Pol Start`, `Log: Fis Start`) registram o início de cada agente.
+*   **Table**: `agent_logs`
+*   **Operation**: `Create`
+*   **Columns**:
+    *   `request_id`: `{{ $('Supabase: Init Request').item.json.id }}`
+    *   `agent_name`: `Legislativo` (ou Politico/Fiscal)
+    *   `message`: `Iniciando análise...`
+    *   `status`: `info`
+
+#### 3. Supabase: Final Update
+Atualiza a requisição original com a resposta final.
+*   **Table**: `requests`
+*   **Operation**: `Update`
+*   **Row ID**: `{{ $('Supabase: Init Request').item.json.id }}`
+*   **Columns**:
+    *   `status`: `completed`
+    *   `final_response`: `{{ $json.text }}`
+
+---
+
 ## 🧪 Como Testar
 
-Após configurar todos os agentes:
+Após configurar todos os agentes e o Supabase:
 
 1.  Ative o workflow.
 2.  Faça uma requisição POST para o webhook:
@@ -152,4 +195,6 @@ Após configurar todos os agentes:
       -H "Content-Type: application/json" \
       -d '{"query": "Quais os gastos do deputado Fulano?"}'
     ```
-3.  Acompanhe a execução no n8n para ver os agentes sendo acionados.
+3.  Acompanhe a execução no n8n.
+4.  Verifique no Supabase se a tabela `requests` recebeu a nova linha e se `agent_logs` tem os registros.
+
