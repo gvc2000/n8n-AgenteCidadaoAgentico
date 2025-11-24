@@ -148,3 +148,6 @@ Para detalhes sobre como integrar o n8n com o servidor MCP (Model Context Protoc
 
 [Guia de Integração MCP](./MCP_INTEGRATION.md)
 
+---
+**Última Verificação de Deploy**: 2025-11-24
+
