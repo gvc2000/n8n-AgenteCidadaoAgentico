@@ -138,7 +138,7 @@ curl -X POST https://seu-app.up.railway.app/webhook/chat \
 
 *   **Erro 502/503 no Railway**: O n8n pode demorar um pouco para iniciar. Verifique os logs na aba "Deployments" > "View Logs".
 *   **Webhook URL mismatch**: Se o n8n reclamar da URL, verifique se a variável `WEBHOOK_URL` está exatamente igual ao domínio gerado, incluindo `https://`.
-*   **Dados sumindo**: Verifique se o Volume foi montado corretamente em `/home/node/.n8n`.
+*   **Dados sumindo**: Verifique se o Volume foi montado corretamente em `/home/node/.n8n` e se a variável `N8N_USER_FOLDER=/home/node` está definida (especialmente se rodar como root).
 
 ---
 
