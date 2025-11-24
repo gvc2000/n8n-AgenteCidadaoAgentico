@@ -1,0 +1,423 @@
+{
+    "name": "Agente Cidadão - Multi-Agentes",
+    "nodes": [
+        {
+            "parameters": {
+                "path": "chat",
+                "responseMode": "lastNode",
+                "options": {}
+            },
+            "id": "webhook-trigger",
+            "name": "Webhook Chat",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                0,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "tableId": "requests",
+                "operation": "create",
+                "columns": {
+                    "user_query": "={{ $json.body.query }}",
+                    "status": "orchestrating"
+                }
+            },
+            "id": "supabase-init",
+            "name": "Supabase: Init Request",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                200,
+                0
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+                    "name": "Supabase account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "model": "gpt-4o",
+                "messages": {
+                    "values": [
+                        {
+                            "role": "system",
+                            "content": "Você é o Orquestrador do Agente Cidadão. Sua função é analisar a pergunta do usuário e decidir quais agentes especialistas devem ser acionados.\n\nAgentes disponíveis:\n- legislativo: Para leis, projetos de lei, tramitações.\n- politico: Para perfil de políticos, discursos, ideologia.\n- fiscal: Para gastos, cotas parlamentares, orçamento.\n\nResponda APENAS um JSON no formato:\n{\n  \"agentes\": [\"legislativo\", \"fiscal\"] \n}"
+                        },
+                        {
+                            "role": "user",
+                            "content": "={{ $('Webhook Chat').item.json.body.query }}"
+                        }
+                    ]
+                },
+                "jsonOutput": true
+            },
+            "id": "llm-orchestrator",
+            "name": "Orquestrador (LLM)",
+            "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
+            "typeVersion": 1,
+            "position": [
+                400,
+                0
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "dataType": "string",
+                "value1": "={{ $json.agentes }}",
+                "rules": {
+                    "rules": [
+                        {
+                            "value2": "legislativo",
+                            "output": 0
+                        },
+                        {
+                            "value2": "politico",
+                            "output": 1
+                        },
+                        {
+                            "value2": "fiscal",
+                            "output": 2
+                        }
+                    ]
+                },
+                "fallbackOutput": 3
+            },
+            "id": "router",
+            "name": "Router",
+            "type": "n8n-nodes-base.switch",
+            "typeVersion": 1,
+            "position": [
+                600,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "tableId": "agent_logs",
+                "operation": "create",
+                "columns": {
+                    "request_id": "={{ $('Supabase: Init Request').item.json.id }}",
+                    "agent_name": "Legislativo",
+                    "message": "Iniciando análise legislativa...",
+                    "status": "info"
+                }
+            },
+            "id": "log-leg-start",
+            "name": "Log: Leg Start",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                800,
+                -100
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://localhost:3000/mcp/legislativo",
+                "method": "POST",
+                "bodyParameters": {
+                    "query": "={{ $('Webhook Chat').item.json.body.query }}"
+                }
+            },
+            "id": "agent-legislativo",
+            "name": "Agente Legislativo",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 1,
+            "position": [
+                1000,
+                -100
+            ]
+        },
+        {
+            "parameters": {
+                "tableId": "agent_logs",
+                "operation": "create",
+                "columns": {
+                    "request_id": "={{ $('Supabase: Init Request').item.json.id }}",
+                    "agent_name": "Politico",
+                    "message": "Iniciando análise política...",
+                    "status": "info"
+                }
+            },
+            "id": "log-pol-start",
+            "name": "Log: Pol Start",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                800,
+                100
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://localhost:3000/mcp/politico",
+                "method": "POST",
+                "bodyParameters": {
+                    "query": "={{ $('Webhook Chat').item.json.body.query }}"
+                }
+            },
+            "id": "agent-politico",
+            "name": "Agente Politico",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 1,
+            "position": [
+                1000,
+                100
+            ]
+        },
+        {
+            "parameters": {
+                "tableId": "agent_logs",
+                "operation": "create",
+                "columns": {
+                    "request_id": "={{ $('Supabase: Init Request').item.json.id }}",
+                    "agent_name": "Fiscal",
+                    "message": "Iniciando auditoria fiscal...",
+                    "status": "info"
+                }
+            },
+            "id": "log-fis-start",
+            "name": "Log: Fis Start",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                800,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://localhost:3000/mcp/fiscal",
+                "method": "POST",
+                "bodyParameters": {
+                    "query": "={{ $('Webhook Chat').item.json.body.query }}"
+                }
+            },
+            "id": "agent-fiscal",
+            "name": "Agente Fiscal",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 1,
+            "position": [
+                1000,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "mode": "wait"
+            },
+            "id": "merge",
+            "name": "Merge Results",
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 1,
+            "position": [
+                1200,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "model": "gpt-4o",
+                "messages": {
+                    "values": [
+                        {
+                            "role": "system",
+                            "content": "Você é o Sintetizador. Consolide as informações recebidas dos agentes especialistas em uma resposta única, clara e direta para o cidadão."
+                        },
+                        {
+                            "role": "user",
+                            "content": "Dados Legislativos: {{ $json.legislativo }}\nDados Políticos: {{ $json.politico }}\nDados Fiscais: {{ $json.fiscal }}"
+                        }
+                    ]
+                }
+            },
+            "id": "llm-synthesizer",
+            "name": "Sintetizador (LLM)",
+            "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
+            "typeVersion": 1,
+            "position": [
+                1400,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "tableId": "requests",
+                "operation": "update",
+                "id": "={{ $('Supabase: Init Request').item.json.id }}",
+                "columns": {
+                    "status": "completed",
+                    "final_response": "={{ $json.text }}"
+                }
+            },
+            "id": "supabase-final",
+            "name": "Supabase: Final Update",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                1600,
+                0
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook Chat": {
+            "main": [
+                [
+                    {
+                        "node": "Supabase: Init Request",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Supabase: Init Request": {
+            "main": [
+                [
+                    {
+                        "node": "Orquestrador (LLM)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Orquestrador (LLM)": {
+            "main": [
+                [
+                    {
+                        "node": "Router",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Router": {
+            "main": [
+                [
+                    {
+                        "node": "Log: Leg Start",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Log: Pol Start",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Log: Fis Start",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Log: Leg Start": {
+            "main": [
+                [
+                    {
+                        "node": "Agente Legislativo",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agente Legislativo": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Results",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Log: Pol Start": {
+            "main": [
+                [
+                    {
+                        "node": "Agente Politico",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agente Politico": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Results",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Log: Fis Start": {
+            "main": [
+                [
+                    {
+                        "node": "Agente Fiscal",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agente Fiscal": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Results",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Merge Results": {
+            "main": [
+                [
+                    {
+                        "node": "Sintetizador (LLM)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Sintetizador (LLM)": {
+            "main": [
+                [
+                    {
+                        "node": "Supabase: Final Update",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}
