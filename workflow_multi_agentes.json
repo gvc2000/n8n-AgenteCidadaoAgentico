@@ -121,24 +121,44 @@
             "position": [
                 800,
                 -100
-            ]
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+                    "name": "Supabase account"
+                }
+            }
         },
         {
             "parameters": {
-                "url": "http://localhost:3000/mcp/legislativo",
-                "method": "POST",
-                "bodyParameters": {
-                    "query": "={{ $('Webhook Chat').item.json.body.query }}"
+                "model": "gpt-4o",
+                "messages": {
+                    "values": [
+                        {
+                            "role": "system",
+                            "content": "Você é um consultor legislativo sênior. Analise o teor das leis, o impacto social e o status atual.\n\nNOTA: Para acessar dados reais da Câmara, este nó deve ser convertido em um 'AI Agent' com acesso às ferramentas MCP: buscar_proposicoes, detalhar_proposicao, tramitacoes_proposicao."
+                        },
+                        {
+                            "role": "user",
+                            "content": "={{ $('Webhook Chat').item.json.body.query }}"
+                        }
+                    ]
                 }
             },
             "id": "agent-legislativo",
             "name": "Agente Legislativo",
-            "type": "n8n-nodes-base.httpRequest",
+            "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
             "typeVersion": 1,
             "position": [
                 1000,
                 -100
-            ]
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI account"
+                }
+            }
         },
         {
             "parameters": {
@@ -158,24 +178,44 @@
             "position": [
                 800,
                 100
-            ]
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+                    "name": "Supabase account"
+                }
+            }
         },
         {
             "parameters": {
-                "url": "http://localhost:3000/mcp/politico",
-                "method": "POST",
-                "bodyParameters": {
-                    "query": "={{ $('Webhook Chat').item.json.body.query }}"
+                "model": "gpt-4o",
+                "messages": {
+                    "values": [
+                        {
+                            "role": "system",
+                            "content": "Você é um analista político. Foque nas posições ideológicas, histórico de votação e alianças.\n\nNOTA: Para acessar dados reais da Câmara, este nó deve ser convertido em um 'AI Agent' com acesso às ferramentas MCP: buscar_deputados, detalhar_deputado, discursos_deputado."
+                        },
+                        {
+                            "role": "user",
+                            "content": "={{ $('Webhook Chat').item.json.body.query }}"
+                        }
+                    ]
                 }
             },
             "id": "agent-politico",
             "name": "Agente Politico",
-            "type": "n8n-nodes-base.httpRequest",
+            "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
             "typeVersion": 1,
             "position": [
                 1000,
                 100
-            ]
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI account"
+                }
+            }
         },
         {
             "parameters": {
@@ -195,24 +235,44 @@
             "position": [
                 800,
                 300
-            ]
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+                    "name": "Supabase account"
+                }
+            }
         },
         {
             "parameters": {
-                "url": "http://localhost:3000/mcp/fiscal",
-                "method": "POST",
-                "bodyParameters": {
-                    "query": "={{ $('Webhook Chat').item.json.body.query }}"
+                "model": "gpt-4o",
+                "messages": {
+                    "values": [
+                        {
+                            "role": "system",
+                            "content": "Você é um auditor fiscal. Procure por anomalias, gastos excessivos ou padrões suspeitos.\n\nNOTA: Para acessar dados reais da Câmara, este nó deve ser convertido em um 'AI Agent' com acesso às ferramentas MCP: despesas_deputado, detalhar_deputado."
+                        },
+                        {
+                            "role": "user",
+                            "content": "={{ $('Webhook Chat').item.json.body.query }}"
+                        }
+                    ]
                 }
             },
             "id": "agent-fiscal",
             "name": "Agente Fiscal",
-            "type": "n8n-nodes-base.httpRequest",
+            "type": "@n8n/n8n-nodes-langchain.chainOpenAi",
             "typeVersion": 1,
             "position": [
                 1000,
                 300
-            ]
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI account"
+                }
+            }
         },
         {
             "parameters": {
@@ -250,7 +310,13 @@
             "position": [
                 1400,
                 0
-            ]
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI account"
+                }
+            }
         },
         {
             "parameters": {
@@ -269,7 +335,13 @@
             "position": [
                 1600,
                 0
-            ]
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "YOUR_SUPABASE_CREDENTIAL_ID",
+                    "name": "Supabase account"
+                }
+            }
         }
     ],
     "connections": {

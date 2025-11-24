@@ -52,15 +52,11 @@ Vá em **Project Settings > API** e anote:
 O Railway é a plataforma onde nosso servidor n8n irá rodar. Para evitar problemas de permissão com volumes, usaremos um `Dockerfile` customizado que roda como root.
 
 ### 2.1. Criar Novo Projeto via GitHub
-1.  Faça o push deste repositório para o seu GitHub.
+1.  Faça o push deste repositório (`n8n-AgenteCidadaoAgentico`) para o seu GitHub.
 2.  Acesse [railway.app](https://railway.app) e faça login.
 3.  Clique em **New Project** > **Deploy from GitHub repo**.
-4.  Selecione o seu repositório `AgenteCidadaoMCP`.
-5.  **IMPORTANTE**: O Railway tentará fazer deploy da raiz. Precisamos configurar para usar a pasta `n8n`.
-    *   Clique no card do serviço que foi criado.
-    *   Vá em **Settings**.
-    *   Em **Root Directory**, altere para `/n8n`.
-    *   O Railway fará um novo build automaticamente usando o `Dockerfile` desta pasta.
+4.  Selecione o seu repositório `n8n-AgenteCidadaoAgentico`.
+5.  O Railway fará o build automaticamente usando o `Dockerfile` da raiz.
 
 ### 2.2. Configurar Variáveis de Ambiente
 1.  Clique no serviço `n8n` recém-criado.
@@ -75,6 +71,7 @@ O Railway é a plataforma onde nosso servidor n8n irá rodar. Para evitar proble
 | `WEBHOOK_URL` | `https://seu-app.up.railway.app` | **CRÍTICO**: URL pública do seu app (veja passo 2.3) |
 | `N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS` | `true` | Segurança |
 | `GENERIC_TIMEZONE` | `America/Sao_Paulo` | Fuso horário |
+| `MCP_API_URL` | `https://seu-mcp-server.up.railway.app` | URL do servidor MCP (se separado) |
 
 ### 2.3. Gerar Domínio Público
 1.  Vá na aba **Settings** do serviço.
