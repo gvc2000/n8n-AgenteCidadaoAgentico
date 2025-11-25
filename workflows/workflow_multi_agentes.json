@@ -1,0 +1,975 @@
+{
+    "name": "Agente Cidadão - Multi-Agentes",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "chat",
+                "responseMode": "lastNode",
+                "options": {}
+            },
+            "id": "3c9454b2-5775-4e2b-aceb-498e5c14cc7f",
+            "name": "Webhook Chat",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                -976,
+                96
+            ],
+            "webhookId": "a23384a3-5018-4dfd-a6cc-e9bcd5eded3f"
+        },
+        {
+            "parameters": {
+                "tableId": "requests",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldId": "user_query",
+                            "fieldValue": "={{ $json.body.query }}"
+                        },
+                        {
+                            "fieldId": "status",
+                            "fieldValue": "orchestrating"
+                        }
+                    ]
+                }
+            },
+            "id": "edc35c24-4100-4afb-8d9c-360e8d49c7c5",
+            "name": "Supabase: Init Request",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                -784,
+                96
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "5y5XCrIlACcF46pQ",
+                    "name": "Supabase account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "dataType": "string",
+                "value1": "={{ $json.agentes }}",
+                "rules": {
+                    "rules": [
+                        {
+                            "value2": "legislativo"
+                        },
+                        {
+                            "value2": "politico",
+                            "output": 1
+                        },
+                        {
+                            "value2": "fiscal",
+                            "output": 2
+                        }
+                    ]
+                }
+            },
+            "id": "d7ccc8ae-fb2f-43e3-8545-0ce54046bb27",
+            "name": "Router",
+            "type": "n8n-nodes-base.switch",
+            "typeVersion": 1,
+            "position": [
+                -192,
+                80
+            ]
+        },
+        {
+            "parameters": {
+                "tableId": "agent_logs",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldId": "request_id",
+                            "fieldValue": "={{ $('Supabase: Init Request').item.json.id }}"
+                        },
+                        {
+                            "fieldId": "agent_name",
+                            "fieldValue": "Legislativo"
+                        },
+                        {
+                            "fieldId": "message",
+                            "fieldValue": "Iniciando análise..."
+                        },
+                        {
+                            "fieldId": "status",
+                            "fieldValue": "info"
+                        }
+                    ]
+                }
+            },
+            "id": "5bc93e94-b912-4555-8b5c-30b6f21d14ee",
+            "name": "Log: Leg Start",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                -48,
+                -48
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "5y5XCrIlACcF46pQ",
+                    "name": "Supabase account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "tableId": "agent_logs",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldId": "request_id",
+                            "fieldValue": "={{ $('Supabase: Init Request').item.json.id }}"
+                        },
+                        {
+                            "fieldId": "agent_name",
+                            "fieldValue": "Político"
+                        },
+                        {
+                            "fieldId": "message",
+                            "fieldValue": "Iniciando análise..."
+                        },
+                        {
+                            "fieldId": "status",
+                            "fieldValue": "info"
+                        }
+                    ]
+                }
+            },
+            "id": "5faa6a05-798d-4afa-8c9f-237caf94eff8",
+            "name": "Log: Pol Start",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                -48,
+                256
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "5y5XCrIlACcF46pQ",
+                    "name": "Supabase account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "tableId": "agent_logs",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldId": "request_id",
+                            "fieldValue": "={{ $('Supabase: Init Request').item.json.id }}"
+                        },
+                        {
+                            "fieldId": "agent_name",
+                            "fieldValue": "Fiscal"
+                        },
+                        {
+                            "fieldId": "message",
+                            "fieldValue": "Iniciando análise..."
+                        },
+                        {
+                            "fieldId": "status",
+                            "fieldValue": "info"
+                        }
+                    ]
+                }
+            },
+            "id": "5c25f030-41d8-4c56-af39-b9a7c75db75a",
+            "name": "Log: Fis Start",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                -64,
+                528
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "5y5XCrIlACcF46pQ",
+                    "name": "Supabase account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "tableId": "requests",
+                "filters": {
+                    "conditions": [
+                        {
+                            "keyName": "id",
+                            "condition": "eq",
+                            "keyValue": "={{ $('Supabase: Init Request').first().json.id }}"
+                        }
+                    ]
+                },
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldId": "status",
+                            "fieldValue": "completed"
+                        },
+                        {
+                            "fieldId": "final_response",
+                            "fieldValue": "={{ $json.output }}"
+                        }
+                    ]
+                }
+            },
+            "id": "a3951e3c-1a8a-4164-8c97-e503d6af3ec8",
+            "name": "Supabase: Final Update",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                912,
+                400
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "5y5XCrIlACcF46pQ",
+                    "name": "Supabase account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "claude-sonnet-4-5-20250929",
+                    "cachedResultName": "Claude Sonnet 4.5"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+            "typeVersion": 1.3,
+            "position": [
+                -640,
+                304
+            ],
+            "id": "23367157-e2df-44b4-8933-eab415acfa92",
+            "name": "Anthropic Chat Model",
+            "credentials": {
+                "anthropicApi": {
+                    "id": "yza3FCZS6Qw29DDQ",
+                    "name": "Anthropic account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "claude-sonnet-4-5-20250929",
+                    "cachedResultName": "Claude Sonnet 4.5"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+            "typeVersion": 1.3,
+            "position": [
+                96,
+                96
+            ],
+            "id": "34022c57-2cf0-4a96-b78c-a1cc7e3e7529",
+            "name": "Anthropic Chat Model1",
+            "credentials": {
+                "anthropicApi": {
+                    "id": "yza3FCZS6Qw29DDQ",
+                    "name": "Anthropic account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "endpointUrl": "=agentecidadaomcp-production.up.railway.app/mcp",
+                "include": "selected",
+                "includeTools": [
+                    "buscar_proposicoes",
+                    "detalhar_proposicao",
+                    "autores_proposicao",
+                    "tramitacoes_proposicao",
+                    "votacoes_proposicao",
+                    "relacionadas_proposicao",
+                    "temas_proposicao"
+                ],
+                "options": {
+                    "timeout": 60000
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+            "typeVersion": 1.2,
+            "position": [
+                272,
+                112
+            ],
+            "id": "0f993e7d-03dd-4422-844c-cb208e8be6b7",
+            "name": "MCP Client"
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "claude-sonnet-4-5-20250929",
+                    "cachedResultName": "Claude Sonnet 4.5"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+            "typeVersion": 1.3,
+            "position": [
+                160,
+                416
+            ],
+            "id": "7bde39ef-9df1-4ff2-bd30-61e227382291",
+            "name": "Anthropic Chat Model2",
+            "credentials": {
+                "anthropicApi": {
+                    "id": "yza3FCZS6Qw29DDQ",
+                    "name": "Anthropic account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "endpointUrl": "agentecidadaomcp-production.up.railway.app/mcp",
+                "include": "selected",
+                "includeTools": [
+                    "buscar_deputados",
+                    "detalhar_deputado",
+                    "obter_perfil_completo_deputado",
+                    "despesas_deputado",
+                    "discursos_deputado",
+                    "eventos_deputado",
+                    "frentes_deputado",
+                    "ocupacoes_deputado",
+                    "orgaos_deputado",
+                    "profissoes_deputado"
+                ],
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+            "typeVersion": 1.2,
+            "position": [
+                416,
+                384
+            ],
+            "id": "3d432f25-8da6-425d-ba5d-46503401f87e",
+            "name": "MCP Client1"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "={{ $('Webhook Chat').item.json.body.query }}",
+                "options": {
+                    "systemMessage": "Você é o Orquestrador do Agente Cidadão. Sua função é analisar a pergunta do usuário e decidir quais agentes especialistas devem ser acionados.\n\nAgentes disponíveis:\n- legislativo: Para leis, projetos de lei, tramitações.\n- politico: Para perfil de políticos, discursos, ideologia.\n- fiscal: Para gastos, cotas parlamentares, orçamento.\n\nResponda APENAS um JSON no formato:\n{\n  \"agentes\": [\"legislativo\", \"fiscal\"] \n}"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 3,
+            "position": [
+                -640,
+                96
+            ],
+            "id": "61a1270e-6994-4816-b839-4736315ea755",
+            "name": "Orquestador"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "={{ $json.user_query }}",
+                "options": {
+                    "systemMessage": "Você é um consultor legislativo sênior. Analise o teor das leis, o impacto social e o status atual.\n\nVocê tem acesso às ferramentas MCP para buscar dados reais da Câmara."
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 3,
+            "position": [
+                288,
+                -32
+            ],
+            "id": "38b0734a-8a11-4c62-8bcf-94cc307555da",
+            "name": "Agente Legislativo"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "={{ $json.user_query }}",
+                "options": {
+                    "systemMessage": "Você é um analista político. Foque nas posições ideológicas, histórico de votação e alianças.\nVocê tem acesso às ferramentas MCP para buscar dados reais da Câmara."
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 3,
+            "position": [
+                240,
+                240
+            ],
+            "id": "e89ac1e7-c82a-4567-bc25-d11da6ce2102",
+            "name": "Agente Político"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "={{ $json.user_query }}",
+                "options": {
+                    "systemMessage": "Você é um Auditor Fiscal Especializado em Contas Parlamentares (CEAP).\n\nSUA MISSÃO:\nResponder perguntas sobre gastos e despesas de deputados federais com precisão absoluta, usando as ferramentas disponíveis.\n\nPROTOCOLO DE EXECUÇÃO (Siga rigorosamente):\n\n1. IDENTIFICAÇÃO:\n   - O usuário vai fornecer um nome (ex: \"Eduardo Bolsonaro\").\n   - USE a ferramenta `buscar_deputados` para encontrar o ID deste deputado.\n   - NÃO tente adivinhar o ID.\n\n2. COLETA DE DADOS:\n   - Com o ID em mãos, USE a ferramenta `despesas_deputado`.\n   - Busque as despesas do ano corrente ou do período solicitado.\n\n3. ANÁLISE E RESPOSTA:\n   - Analise os dados retornados pela ferramenta.\n   - Responda no seguinte formato:\n\n   ## 💰 Relatório de Despesas: [Nome do Deputado]\n   \n   **Resumo Geral:**\n   - Total Gasto: R$ [Valor Total]\n   - Período: [Mês/Ano Inicial] a [Mês/Ano Final]\n   \n   **Top 3 Categorias de Gastos:**\n   1. [Categoria 1]: R$ [Valor]\n   2. [Categoria 2]: R$ [Valor]\n   3. [Categoria 3]: R$ [Valor]\n   \n   **Análise:**\n   [Breve comentário sobre se há gastos atípicos ou qual a maior concentração de despesas]\n\nIMPORTANTE:\n- Se a ferramenta `buscar_deputados` retornar mais de um deputado, peça para o usuário especificar (ex: \"Encontrei dois deputados com esse nome...\").\n- Se a ferramenta `despesas_deputado` não retornar dados, informe: \"Não foram encontrados registros de despesas para este período.\"\n- NUNCA invente valores. Se a ferramenta falhar, diga que não conseguiu os dados.nte dados."
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 3,
+            "position": [
+                256,
+                528
+            ],
+            "id": "b98b86e5-7862-4c67-9546-ec58fb6e10ef",
+            "name": "Agente Fiscal"
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "claude-sonnet-4-5-20250929",
+                    "cachedResultName": "Claude Sonnet 4.5"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+            "typeVersion": 1.3,
+            "position": [
+                192,
+                720
+            ],
+            "id": "f4966f4d-31f2-49e8-a5eb-2ba3644e65b5",
+            "name": "Anthropic Chat Model3",
+            "credentials": {
+                "anthropicApi": {
+                    "id": "yza3FCZS6Qw29DDQ",
+                    "name": "Anthropic account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "numberInputs": 3
+            },
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 3.2,
+            "position": [
+                544,
+                288
+            ],
+            "id": "5771c669-3a35-4aa5-a0ef-d737f353749e",
+            "name": "Merge"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "=Pergunta original: {{ $('Webhook Chat').item.json.body.query }}\n\nAnálises recebidas:\n{{ JSON.stringify($json, null, 2) }}",
+                "options": {
+                    "systemMessage": "você é o Sintetizador. Consolide as informações recebidas dos agentes especialistas em uma resposta única, clara e direta para o cidadão.\n\nIMPORTANTE:\n- Elimine redundâncias entre os agentes\n- Resolva contradições (se houver)\n- Use um tom acessível e objetivo\n- Cite fontes quando relevante (ex: \"Segundo dados da Câmara...\")"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 3,
+            "position": [
+                640,
+                -80
+            ],
+            "id": "5a7d71d4-08d1-4f37-9fed-61c3fe426044",
+            "name": "Sintetizador"
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "claude-sonnet-4-5-20250929",
+                    "cachedResultName": "Claude Sonnet 4.5"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+            "typeVersion": 1.3,
+            "position": [
+                656,
+                64
+            ],
+            "id": "3014981d-aa28-4cd9-9b0f-f1c2d39f65b6",
+            "name": "Anthropic Chat Model4",
+            "credentials": {
+                "anthropicApi": {
+                    "id": "yza3FCZS6Qw29DDQ",
+                    "name": "Anthropic account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ $json.output }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.4,
+            "position": [
+                1024,
+                128
+            ],
+            "id": "b7a682aa-4c63-4a3a-9e68-a50413f00733",
+            "name": "Respond to Webhook"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "adc36401-eb50-4987-aa20-d0564109aa33",
+                            "name": "agents",
+                            "value": "=  {{ $json.output }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "543efd44-b08f-4f86-a88d-7bedb53345dc",
+                            "name": "user_query",
+                            "value": "={{ $('Webhook Chat').item.json.body.query }}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                -432,
+                304
+            ],
+            "id": "abb40951-4641-4a20-b2cb-4fe5f225f036",
+            "name": "Edit Fields"
+        },
+        {
+            "parameters": {
+                "jsCode": "const text = $input.item.json.agents;\n\n// Extrai o JSON entre as chaves\nconst start = text.indexOf('{');\nconst end = text.lastIndexOf('}') + 1;\nconst jsonString = text.substring(start, end);\n\nconst parsed = JSON.parse(jsonString);\n\nreturn {\n  agentes: parsed.agentes[0], // Pega o primeiro agente do array\n  user_query: $input.item.json.user_query // Já vem do nó anterior\n};\n"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -320,
+                112
+            ],
+            "id": "debc76c8-332f-4e52-9184-5890763d5345",
+            "name": "Code in JavaScript"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "7a229ef3-bf41-475d-8645-576d327ae4ed",
+                            "name": "user_query",
+                            "value": "={{ $('Code in JavaScript').first().json.user_query }}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                96,
+                528
+            ],
+            "id": "eec2ace5-336e-46d6-a2cf-ed99caa1c30a",
+            "name": "Edit Fields1"
+        },
+        {
+            "parameters": {
+                "endpointUrl": "agentecidadaomcp-production.up.railway.app/mcp",
+                "include": "selected",
+                "includeTools": [
+                    "buscar_deputados",
+                    "despesas_deputado"
+                ],
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+            "typeVersion": 1.2,
+            "position": [
+                512,
+                736
+            ],
+            "id": "d36fff16-097a-4bbd-b52e-0c9b2bc60bed",
+            "name": "MCP Client2"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "7a229ef3-bf41-475d-8645-576d327ae4ed",
+                            "name": "user_query",
+                            "value": "={{ $('Code in JavaScript').first().json.user_query }}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                80,
+                256
+            ],
+            "id": "31b58f89-5755-4c29-8c2b-afca21a29eca",
+            "name": "Edit Fields2"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "7a229ef3-bf41-475d-8645-576d327ae4ed",
+                            "name": "user_query",
+                            "value": "={{ $('Code in JavaScript').first().json.user_query }}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                112,
+                -48
+            ],
+            "id": "519091a0-2052-4b81-ad4c-d70193f5f048",
+            "name": "Edit Fields3"
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "Webhook Chat": {
+            "main": [
+                [
+                    {
+                        "node": "Supabase: Init Request",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Supabase: Init Request": {
+            "main": [
+                [
+                    {
+                        "node": "Orquestador",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Router": {
+            "main": [
+                [
+                    {
+                        "node": "Log: Leg Start",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Log: Pol Start",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Log: Fis Start",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Log: Leg Start": {
+            "main": [
+                [
+                    {
+                        "node": "Edit Fields3",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Log: Pol Start": {
+            "main": [
+                [
+                    {
+                        "node": "Edit Fields2",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Log: Fis Start": {
+            "main": [
+                [
+                    {
+                        "node": "Edit Fields1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Anthropic Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Orquestador",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Anthropic Chat Model1": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Agente Legislativo",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "MCP Client": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Agente Legislativo",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Anthropic Chat Model2": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Agente Político",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "MCP Client1": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Agente Político",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Orquestador": {
+            "main": [
+                [
+                    {
+                        "node": "Edit Fields",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agente Legislativo": {
+            "main": [
+                [
+                    {
+                        "node": "Merge",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Anthropic Chat Model3": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Agente Fiscal",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agente Fiscal": {
+            "main": [
+                [
+                    {
+                        "node": "Merge",
+                        "type": "main",
+                        "index": 2
+                    }
+                ]
+            ]
+        },
+        "Agente Político": {
+            "main": [
+                [
+                    {
+                        "node": "Merge",
+                        "type": "main",
+                        "index": 1
+                    }
+                ]
+            ]
+        },
+        "Merge": {
+            "main": [
+                [
+                    {
+                        "node": "Sintetizador",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Anthropic Chat Model4": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Sintetizador",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Sintetizador": {
+            "main": [
+                [
+                    {
+                        "node": "Supabase: Final Update",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Supabase: Final Update": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Edit Fields": {
+            "main": [
+                [
+                    {
+                        "node": "Code in JavaScript",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code in JavaScript": {
+            "main": [
+                [
+                    {
+                        "node": "Router",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Edit Fields1": {
+            "main": [
+                [
+                    {
+                        "node": "Agente Fiscal",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "MCP Client2": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Agente Fiscal",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Edit Fields2": {
+            "main": [
+                [
+                    {
+                        "node": "Agente Político",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Edit Fields3": {
+            "main": [
+                [
+                    {
+                        "node": "Agente Legislativo",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "d78f90fa-61cc-43ce-87aa-fc90d0723ade",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "47c0851f3c62960484133b2e05ab8fb867cdf9e457bce7861d8db6cc8982ffba"
+    },
+    "id": "KfG18yoo9n7C0odE",
+    "tags": []
+}
